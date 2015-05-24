@@ -11,7 +11,7 @@ Connecting to the API
 
 ```go
 func main() {
-    api, err := zabbix.NewAPI("http://zabbix.yourhost.net/api_jsonrpc.php", "User", "Password")
+    api, err := zabbix.NewAPI("http://zabbix.yourhost.net/api_jsonrpc.php", "User", "Password", nil)
     if err != nil {
         fmt.Println(err)
         return

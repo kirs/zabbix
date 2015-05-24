@@ -50,15 +50,16 @@ type ZabbixHistoryItem struct {
 }
 
 type API struct {
-	url    string
-	user   string
-	passwd string
-	id     int
-	auth   string
+	url       string
+	user      string
+	passwd    string
+	transport *http.Transport
+	id        int
+	auth      string
 }
 
-func NewAPI(server, user, passwd string) (*API, error) {
-	return &API{server, user, passwd, 0, ""}, nil
+func NewAPI(server, user, passwd string, transport *http.Transport) (*API, error) {
+	return &API{server, user, passwd, transport, 0, ""}, nil
 }
 
 func (api *API) GetAuth() string {
@@ -81,8 +82,14 @@ func (api *API) ZabbixRequest(method string, data interface{}) (JsonRPCResponse,
 		return JsonRPCResponse{}, err
 	}
 
+	var client *http.Client
 	// Setup our HTTP request
-	client := &http.Client{}
+	if api.transport != nil {
+		client = &http.Client{Transport: api.transport}
+	} else {
+		client = &http.Client{}
+	}
+
 	request, err := http.NewRequest("POST", api.url, bytes.NewBuffer(encoded))
 	if err != nil {
 		return JsonRPCResponse{}, err
